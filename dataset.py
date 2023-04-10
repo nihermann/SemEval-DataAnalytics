@@ -5,7 +5,7 @@ from scipy.stats import gaussian_kde
 
 import pandas as pd
 
-from utx.plot import plot
+from notebooks.utx import plot
 
 
 def load_data(path: str = "data/preprocessed.feather") -> Tuple[InputExample, InputExample, InputExample]:
