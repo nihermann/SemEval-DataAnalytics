@@ -8,7 +8,7 @@ import pandas as pd
 from notebooks.utx import plot
 
 
-def load_data(path: str = "data/preprocessed.feather") -> Tuple[InputExample, InputExample, InputExample]:
+def load_data(path: str = "data/preprocessed.feather") -> Tuple[List[InputExample], List[InputExample], List[InputExample]]:
     ds = pd.read_feather(path)
     ds.score /= 5
     data = [InputExample(texts=[s1, s2], label=score)
@@ -18,19 +18,16 @@ def load_data(path: str = "data/preprocessed.feather") -> Tuple[InputExample, In
     return train, valid, test
 
 
-def plot_kde(ds: List[InputExample], name: str):
-    scores = [t.label for t in ds]
-    (
-        plot(0, 1, 100)
-        .function(gaussian_kde(scores))
-        .labels(name, "Score", "Density")
-        .show()
-    )
+def plot_kde(datasets: List[List[InputExample]], names: List[str]):
+    get_scores = lambda ds: [t.label for t in ds]
+    pl = plot(0, 1, 100).labels("Score Density Distributions", "Score", "Density")
+
+    for data, name in zip(datasets, names):
+        pl.function(gaussian_kde(get_scores(data)), label=name)
+    pl.legend().show()
 
 
 if __name__ == '__main__':
     train, valid, test = load_data()
-    plot_kde(train, "Train Dataset")
-    plot_kde(valid, "Validation Dataset")
-    plot_kde(test, "Test Dataset")
+    plot_kde([train, valid, test], ["Train Dataset", "Validation Dataset", "Test Dataset"])
     print()
