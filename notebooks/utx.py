@@ -5,40 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def summarise(df: pd.DataFrame, columns: Optional[List[str]] = None) -> str:
-    """
-    Retrieves statistical information of every column of the provided dataframe.
-    To summarise only selected columns, provide the columns names.
-    :param df: dataframe to summarise.
-    :param columns: optional list of column names to summarise specific columns.
-    :return: printable string containing summary statistics.
-    """
-    if columns:
-        df = df[:, columns]
-    s = f"Summary statistics:\nDataframe dimensions: {len(df)}x{len(df.columns)}"
-    for i in range(len(df.columns)):
-        col = df.iloc[:, i]
-        t = str(col.dtype)
-        s += f"\n{col.name} - {t}"
-        if t == "bool" or ((col == 0) | (col == 1)).all():
-            col = col.astype("bool")
-            counts = col.value_counts()
-            s += f"\n\tCounts:"
-            s += f"\n\t\tTrue: {counts[0]}"
-            s += f"\n\t\tFalse: {counts[1]}"
-        elif t in {"float64", "int64"}:
-            s += f"\n\tRange({np.nanmin(col): .2f}, {np.nanmax(col): .2f})"
-            col_q = col.quantile((.25, .5, .75)).values
-            s += f"\n\tQuantiles: 0.25: {col_q[0]: 0.2f} | 0.5: {col_q[1]: 0.2f} | 0.75: {col_q[2]: 0.2f}"
-            s += f"\n\tMean: {np.nanmean(col): .2f}"
-        else:
-            s += f"\n\tExamples:"
-            for idx in range(3):
-                s += f"\n\t\t{col[idx]}"
-            s += f"\n\tUnique objects:"
-            s += f"\n\t\t{len(col.unique())}"
-        s += f"\n\tContains NaN: {pd.isna(col).any()}"
-    return s
 
 
 
